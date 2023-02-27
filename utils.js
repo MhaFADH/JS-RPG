@@ -19,4 +19,8 @@ function randomNb(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-export {randomNb,ask,readline}
+const delay = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export { randomNb, ask, readline, delay }
