@@ -1,19 +1,25 @@
-
-import { randomNb,ask,readline,delay } from "./utils.js"
-
-
-
+import { randomNb, ask, readline, delay, leave } from "./utils.js"
 
 while (true) {
   console.clear()
-  
-  let strength = randomNb(10, 51)
-  let health = randomNb(100, 301)
+  const MIN_HP = 100
+  const MAX_HP = 301
+  const MIN_STRENGTH = 10
+  const MAX_STRENGTH = 51
+
+  const MONSTER_MIN_HP = 100
+  const MONSTER_MAX_HP = 201
+  const MONSTER_MIN_STRENGTH = 10
+  const MONSTER_MAX_STRENGTH = 31
+
+  const BONUS_HP_THRESHOLD = 106
+
+  let strength = randomNb(MIN_STRENGTH, MAX_STRENGTH)
+  let health = randomNb(MIN_HP, MAX_HP)
   let money = 0
   let restartOver = ""
 
-  console.clear()  
-  console.log('1 - Start game\n2 - Exit')
+  console.log("1 - Start game\n2 - Exit")
 
   const choice = await ask("Your choice (1-2): ")
 
@@ -23,21 +29,22 @@ while (true) {
 
       while (true) {
         console.clear()
-        console.log(`Force:${strength}\nSanté:${health}\nArgent:${money}\n\n1 - Fight\n2 - Healing potion (+50HP for 8$)\n3 - Exit`)
-        
+        console.log(
+          `Strength: ${strength}\nHealth: ${health}\nMoney: ${money}\n\n1 - Fight\n2 - Healing potion (+50HP for 8$)\n3 - Exit`
+        )
+
         const igChoice = await ask("Your choice (1-3): ")
 
         switch (igChoice) {
           case "1":
             console.clear()
-            let monsterStrength = randomNb(10, 31)
-            let monsterHealth = randomNb(100, 201)
-            const cashprize = monsterHealth/15
+            let monsterStrength = randomNb(MONSTER_MIN_STRENGTH, MONSTER_MAX_STRENGTH)
+            let monsterHealth = randomNb(MONSTER_MIN_HP, MONSTER_MAX_HP)
+            const cashPrize = monsterHealth / 15
             let roundNb = 1
-            console.log(`Monster health: ${monsterHealth} --- Your Health: ${health}`)   
-            
+            console.log(`Monster health: ${monsterHealth} --- Your Health: ${health}`)
+
             while (health > 0) {
-                
               if (monsterHealth > 0) {
                 console.log(`ROUND #${roundNb}`)
                 monsterHealth -= strength
@@ -48,10 +55,10 @@ while (true) {
               } else {
                 console.log("YOU WON")
                 await delay(2000)
-                if (health < 106) {
-                  money += Math.round(cashprize)+8
+                if (health < BONUS_HP_THRESHOLD) {
+                  money += Math.round(cashPrize) + 8
                 } else {
-                  money += Math.round(cashprize)
+                  money += Math.round(cashPrize)
                 }
                 break
               }
@@ -74,30 +81,24 @@ while (true) {
             }
             continue
           case "3":
-            console.clear()
-            console.log("Leaving the game...")
-            restartOver = "nope"
-            break
+            leave()
           default:
             continue
         }
         break
       }
-    break
+      break
     case "2":
-      console.clear()
-      console.log("Leaving the game...")
-      restartOver = "nope"
-
-    break
+      leave()
     default:
       continue
   }
+
   if (restartOver === "") {
     continue
   } else {
     break
   }
-  
 }
+
 readline.close()

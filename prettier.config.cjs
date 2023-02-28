@@ -1,1 +1,4 @@
-module.exports = { semi: false }
+module.exports = {
+  semi: false,
+  printWidth: 90,
+}
