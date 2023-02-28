@@ -25,8 +25,6 @@ while (true) {
 
   switch (choice) {
     case "1":
-      console.log("Game is starting...")
-
       while (true) {
         console.clear()
         console.log(
