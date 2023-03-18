@@ -1,4 +1,8 @@
-import { randomNb, ask, readline, delay, leave } from "./utils.js"
+import { ask, readline } from "./utils/ask.js"
+import randomNb from "./utils/randomNb.js"
+import leave from "./choices/leave.js"
+import shop from "./choices/shop.js"
+import fight from "./choices/fight.js"
 
 while (true) {
   console.clear()
@@ -6,13 +10,6 @@ while (true) {
   const MAX_HP = 301
   const MIN_STRENGTH = 10
   const MAX_STRENGTH = 51
-
-  const MONSTER_MIN_HP = 100
-  const MONSTER_MAX_HP = 201
-  const MONSTER_MIN_STRENGTH = 10
-  const MONSTER_MAX_STRENGTH = 31
-
-  const BONUS_HP_THRESHOLD = 106
 
   let strength = randomNb(MIN_STRENGTH, MAX_STRENGTH)
   let health = randomNb(MIN_HP, MAX_HP)
@@ -28,39 +25,17 @@ while (true) {
       while (true) {
         console.clear()
         console.log(
-          `Strength: ${strength}\nHealth: ${health}\nMoney: ${money}\n\n1 - Fight\n2 - Healing potion (+50HP for 8$)\n3 - Exit`
+          `Strength: ${strength} ⚔️\nHealth: ${health} ❤️\nMoney: ${money} 🪙\n\n1 - Fight\n2 - Shop\n3 - Exit`
         )
 
         const igChoice = await ask("Your choice (1-3): ")
 
         switch (igChoice) {
           case "1":
-            console.clear()
-            let monsterStrength = randomNb(MONSTER_MIN_STRENGTH, MONSTER_MAX_STRENGTH)
-            let monsterHealth = randomNb(MONSTER_MIN_HP, MONSTER_MAX_HP)
-            const cashPrize = monsterHealth / 15
-            let roundNb = 1
-            console.log(`Monster health: ${monsterHealth} --- Your Health: ${health}`)
-
-            while (health > 0) {
-              if (monsterHealth > 0) {
-                console.log(`ROUND #${roundNb}`)
-                monsterHealth -= strength
-                health -= monsterStrength
-                console.log(`Monster health: ${monsterHealth} --- Your Health: ${health}`)
-                roundNb++
-                await delay(2000)
-              } else {
-                console.log("YOU WON")
-                await delay(2000)
-                if (health < BONUS_HP_THRESHOLD) {
-                  money += Math.round(cashPrize) + 8
-                } else {
-                  money += Math.round(cashPrize)
-                }
-                break
-              }
-            }
+            const afterFightValues = await fight(money, strength, health)
+            strength = afterFightValues.strength
+            money = afterFightValues.money
+            health = afterFightValues.health
 
             if (health > 0) {
               continue
@@ -70,14 +45,12 @@ while (true) {
               break
             }
           case "2":
-            if (money > 7) {
-              health += 50
-              money -= 8
-            } else {
-              console.log("\nYou dont' have enough money to buy that")
-              await delay(1000)
-            }
+            const afterShopValues = await shop(strength, health, money)
+            strength = afterShopValues.strength
+            money = afterShopValues.money
+            health = afterShopValues.health
             continue
+
           case "3":
             leave()
           default:
@@ -95,7 +68,7 @@ while (true) {
   if (restartOver === "") {
     continue
   } else {
-    break
+    leave()
   }
 }
 
